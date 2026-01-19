@@ -67,7 +67,7 @@ extension DIContainer {
         
         #if os(watchOS)
         register(PhoneConnecting.self, cached: true) {
-            PhoneConnector(dataManager: DIContainer.shared.resolve())
+            PhoneConnector(dataManager: resolve())
         }
         #endif
         
