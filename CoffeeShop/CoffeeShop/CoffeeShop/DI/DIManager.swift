@@ -5,10 +5,13 @@
 //  Created by Matej Šalka on 18/01/2026.
 //
 
+import Combine
 import Foundation
 
 final class DIContainer: ObservableObject {
     typealias Resolver = () -> Any
+
+    let objectWillChange = ObservableObjectPublisher()
 
     private var resolvers = [String: Resolver]()
     private var cache = [String: Any]()
