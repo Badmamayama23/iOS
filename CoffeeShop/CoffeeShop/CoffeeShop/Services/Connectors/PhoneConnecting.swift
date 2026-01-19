@@ -10,5 +10,6 @@ import WatchConnectivity
 #if os(watchOS)
 protocol PhoneConnecting {
     func session(_ session: WCSession, didReceiveMessage message: [String : Any])
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any])
 }
 #endif

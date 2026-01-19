@@ -28,29 +28,46 @@ class PhoneConnector: NSObject, WCSessionDelegate, PhoneConnecting {
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        // Parse the received coffee shop data
-        guard let idString = message["id"] as? String,
+        handleCoffeeShopPayload(message)
+    }
+    
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any]) {
+        handleCoffeeShopPayload(userInfo)
+    }
+    
+    private func handleCoffeeShopPayload(_ payload: [String: Any]) {
+        guard let idString = payload["id"] as? String,
               let id = UUID(uuidString: idString),
-              let name = message["name"] as? String,
-              let typeRawValue = message["type"] as? Int16,
-              let rating = message["rating"] as? Int,
-              let address = message["address"] as? String,
-              let latitude = message["latitude"] as? Double,
-              let longitude = message["longitude"] as? Double else {
-            print("Failed to parse coffee shop message")
+              let name = payload["name"] as? String,
+              let typeNumber = payload["type"] as? NSNumber,
+              let ratingNumber = payload["rating"] as? NSNumber,
+              let address = payload["address"] as? String,
+              let latitudeNumber = payload["latitude"] as? NSNumber,
+              let longitudeNumber = payload["longitude"] as? NSNumber else {
+            print("Failed to parse coffee shop payload")
             return
         }
         
-        // Create CoffeeShop CoreData entity and save
-        addNewCoffeeShop(
-            id: id,
-            name: name,
-            type: typeRawValue,
-            rating: Int16(rating),
-            address: address,
-            latitude: latitude,
-            longitude: longitude
-        )
+        let typeRawValue = typeNumber.int16Value
+        let rating = ratingNumber.int16Value
+        let latitude = latitudeNumber.doubleValue
+        let longitude = longitudeNumber.doubleValue
+        
+        dataManager.context.perform {
+            if self.dataManager.fetchCoffeeShopWithId(id: id) != nil {
+                return
+            }
+            
+            self.addNewCoffeeShop(
+                id: id,
+                name: name,
+                type: typeRawValue,
+                rating: rating,
+                address: address,
+                latitude: latitude,
+                longitude: longitude
+            )
+        }
     }
     
     private func addNewCoffeeShop(

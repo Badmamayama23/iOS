@@ -60,13 +60,13 @@ extension DIContainer {
         
         // later step
         #if os(iOS)
-        register(WatchConnecting.self, cached: false) {
+        register(WatchConnecting.self, cached: true) {
             WatchConnector()
         }
         #endif
         
         #if os(watchOS)
-        register(PhoneConnecting.self, cached: false) {
+        register(PhoneConnecting.self, cached: true) {
             PhoneConnector(dataManager: DIContainer.shared.resolve())
         }
         #endif
